@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🐾 タスクボード</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background-color: #fef9f0;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── 装飾背景 ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Ctext x='10' y='40' font-size='28' opacity='0.18'%3E🐱%3C/text%3E%3C/svg%3E"),
+                        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Ctext x='10' y='40' font-size='28' opacity='0.18'%3E🐶%3C/text%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── ヘッダー ── */
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 56px;
+      background: rgba(255, 248, 225, 0.85);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      border-bottom: 1px solid #e2c98a;
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+      z-index: 100;
+    }
+
+    header h1 {
+      font-size: 20px;
+      font-weight: 700;
+      color: #92400e;
+      letter-spacing: 0.02em;
+    }
+
+    /* ── ボードエリア ── */
+    #board-wrapper {
+      position: relative;
+      z-index: 1;
+      padding: 72px 24px 32px;
+      overflow-x: auto;
+      min-height: 100vh;
+    }
+
+    #board {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      width: max-content;
+      min-height: calc(100vh - 120px);
+    }
+
+    /* ── 列（カラム）── */
+    .column {
+      width: 280px;
+      background: #f1f5f9;
+      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+      max-height: calc(100vh - 120px);
+      transition: background 0.15s;
+      flex-shrink: 0;
+    }
+
+    .column.drag-over {
+      background: #dbeafe;
+    }
+
+    .column-header {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 12px 12px 8px;
+      flex-shrink: 0;
+    }
+
+    .column-title {
+      flex: 1;
+      font-size: 14px;
+      font-weight: 700;
+      color: #1e293b;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      outline: none;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 160px;
+    }
+
+    .column-title-input {
+      flex: 1;
+      font-size: 14px;
+      font-weight: 700;
+      color: #1e293b;
+      border: 1px solid #93c5fd;
+      border-radius: 4px;
+      padding: 2px 4px;
+      outline: none;
+      background: white;
+      max-width: 160px;
+    }
+
+    .card-count {
+      background: #cbd5e1;
+      color: #475569;
+      font-size: 11px;
+      font-weight: 600;
+      border-radius: 10px;
+      padding: 1px 7px;
+      min-width: 22px;
+      text-align: center;
+    }
+
+    .column-delete-btn {
+      background: none;
+      border: none;
+      color: #94a3b8;
+      cursor: pointer;
+      font-size: 16px;
+      line-height: 1;
+      padding: 2px 4px;
+      border-radius: 4px;
+      transition: color 0.15s, background 0.15s;
+      flex-shrink: 0;
+    }
+
+    .column-delete-btn:hover {
+      color: #ef4444;
+      background: #fee2e2;
+    }
+
+    /* ── カードリスト ── */
+    .card-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 4px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-height: 40px;
+    }
+
+    /* ── カード ── */
+    .card {
+      background: white;
+      border-radius: 8px;
+      padding: 10px 12px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+      cursor: grab;
+      transition: box-shadow 0.15s, background 0.15s;
+      user-select: none;
+    }
+
+    .card:active {
+      cursor: grabbing;
+    }
+
+    .card.dragging {
+      background: #e0e7ff;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      opacity: 0.85;
+    }
+
+    .card-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #1e293b;
+      line-height: 1.4;
+    }
+
+    .card-desc {
+      font-size: 12px;
+      color: #64748b;
+      margin-top: 4px;
+      line-height: 1.4;
+      white-space: pre-wrap;
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .btn-edit,
+    .btn-delete,
+    .btn-save,
+    .btn-cancel {
+      font-size: 11px;
+      padding: 3px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      border: none;
+      font-weight: 500;
+      transition: opacity 0.15s;
+    }
+
+    .btn-edit  { background: #eff6ff; color: #2563eb; }
+    .btn-edit:hover { background: #dbeafe; }
+    .btn-delete { background: #fff1f2; color: #ef4444; }
+    .btn-delete:hover { background: #fee2e2; }
+    .btn-save  { background: #2563eb; color: white; }
+    .btn-save:hover { opacity: 0.85; }
+    .btn-cancel { background: white; color: #64748b; border: 1px solid #cbd5e1; }
+    .btn-cancel:hover { background: #f8fafc; }
+
+    /* ── カード編集フォーム（インライン）── */
+    .card-edit-form {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .card-edit-form input,
+    .card-edit-form textarea {
+      font-size: 13px;
+      border: 1px solid #93c5fd;
+      border-radius: 4px;
+      padding: 5px 7px;
+      outline: none;
+      resize: vertical;
+      font-family: inherit;
+    }
+
+    /* ── カード追加フォーム ── */
+    .add-card-form {
+      padding: 8px 10px 4px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    .add-card-form input,
+    .add-card-form textarea {
+      font-size: 13px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      padding: 6px 8px;
+      outline: none;
+      resize: vertical;
+      font-family: inherit;
+      background: white;
+    }
+
+    .add-card-form input:focus,
+    .add-card-form textarea:focus {
+      border-color: #93c5fd;
+    }
+
+    .add-card-form-btns {
+      display: flex;
+      gap: 6px;
+    }
+
+    /* ── カード追加ボタン ── */
+    .add-card-btn {
+      margin: 4px 10px 10px;
+      padding: 7px 10px;
+      background: none;
+      border: 1px dashed #94a3b8;
+      border-radius: 6px;
+      color: #64748b;
+      font-size: 13px;
+      cursor: pointer;
+      text-align: left;
+      transition: background 0.15s, color 0.15s;
+      flex-shrink: 0;
+    }
+
+    .add-card-btn:hover {
+      background: #e2e8f0;
+      color: #334155;
+    }
+
+    /* ── 列追加エリア ── */
+    #add-column-area {
+      flex-shrink: 0;
+    }
+
+    #add-column-btn {
+      width: 200px;
+      padding: 12px 16px;
+      background: rgba(255,255,255,0.55);
+      border: 1.5px dashed #d97706;
+      border-radius: 10px;
+      color: #b45309;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+      white-space: nowrap;
+    }
+
+    #add-column-btn:hover {
+      background: rgba(255,237,213,0.8);
+    }
+
+    #add-column-form {
+      width: 220px;
+      background: #f1f5f9;
+      border-radius: 10px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    #add-column-form input {
+      font-size: 14px;
+      border: 1px solid #93c5fd;
+      border-radius: 6px;
+      padding: 7px 10px;
+      outline: none;
+      font-family: inherit;
+    }
+
+    #add-column-form-btns {
+      display: flex;
+      gap: 6px;
+    }
+
+    /* ── ドロッププレースホルダー ── */
+    .drop-placeholder {
+      height: 40px;
+      background: #c7d2fe;
+      border-radius: 6px;
+      border: 2px dashed #818cf8;
+      opacity: 0.7;
+    }
+
+    /* ── スクロールバー ── */
+    .card-list::-webkit-scrollbar { width: 4px; }
+    .card-list::-webkit-scrollbar-track { background: transparent; }
+    .card-list::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 2px; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>🐾 タスクボード</h1>
+  </header>
+
+  <div id="board-wrapper">
+    <div id="board"></div>
+  </div>
+
+<script>
+// ── データ管理 ──────────────────────────────────────
+const STORAGE_KEY = 'taskboard_proto';
+
+const DEFAULT_DATA = {
+  columns: [
+    {
+      id: 'col-1', title: 'To Do',
+      cards: [
+        { id: 'card-1', title: 'サンプルタスク', desc: 'これはサンプルのカードです。編集・削除・移動が可能です。' }
+      ]
+    },
+    { id: 'col-2', title: 'In Progress', cards: [] },
+    { id: 'col-3', title: 'Done', cards: [] }
+  ]
+};
+
+function loadData() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : JSON.parse(JSON.stringify(DEFAULT_DATA));
+  } catch {
+    return JSON.parse(JSON.stringify(DEFAULT_DATA));
+  }
+}
+
+function saveData() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+let state = loadData();
+
+// ── ID生成 ──────────────────────────────────────────
+function uid() {
+  return 'id-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7);
+}
+
+// ── ドラッグ状態 ────────────────────────────────────
+let dragState = null;
+
+// ── レンダリング ────────────────────────────────────
+function render() {
+  const board = document.getElementById('board');
+  board.innerHTML = '';
+
+  state.columns.forEach(col => {
+    board.appendChild(buildColumn(col));
+  });
+
+  // 列追加エリア
+  const addArea = document.createElement('div');
+  addArea.id = 'add-column-area';
+  addArea.appendChild(buildAddColumnWidget());
+  board.appendChild(addArea);
+}
+
+function buildColumn(col) {
+  const el = document.createElement('div');
+  el.className = 'column';
+  el.dataset.colId = col.id;
+
+  // ── ヘッダー
+  const header = document.createElement('div');
+  header.className = 'column-header';
+
+  const titleEl = document.createElement('span');
+  titleEl.className = 'column-title';
+  titleEl.textContent = col.title;
+  titleEl.title = 'クリックで編集';
+  titleEl.addEventListener('click', () => startColumnTitleEdit(col, titleEl));
+
+  const badge = document.createElement('span');
+  badge.className = 'card-count';
+  badge.textContent = col.cards.length;
+
+  const delBtn = document.createElement('button');
+  delBtn.className = 'column-delete-btn';
+  delBtn.innerHTML = '×';
+  delBtn.title = '列を削除';
+  delBtn.addEventListener('click', () => deleteColumn(col.id));
+
+  header.appendChild(titleEl);
+  header.appendChild(badge);
+  header.appendChild(delBtn);
+  el.appendChild(header);
+
+  // ── カードリスト
+  const list = document.createElement('div');
+  list.className = 'card-list';
+  list.dataset.colId = col.id;
+
+  col.cards.forEach(card => {
+    list.appendChild(buildCard(card, col.id));
+  });
+
+  // D&D: dragover / drop
+  list.addEventListener('dragover', e => {
+    e.preventDefault();
+    el.classList.add('drag-over');
+    const after = getDragAfterElement(list, e.clientY);
+    const placeholder = document.querySelector('.drop-placeholder');
+    if (placeholder) placeholder.remove();
+    const ph = document.createElement('div');
+    ph.className = 'drop-placeholder';
+    if (after) {
+      list.insertBefore(ph, after);
+    } else {
+      list.appendChild(ph);
+    }
+  });
+
+  list.addEventListener('dragleave', e => {
+    if (!el.contains(e.relatedTarget)) {
+      el.classList.remove('drag-over');
+      const ph = list.querySelector('.drop-placeholder');
+      if (ph) ph.remove();
+    }
+  });
+
+  list.addEventListener('drop', e => {
+    e.preventDefault();
+    el.classList.remove('drag-over');
+    const ph = list.querySelector('.drop-placeholder');
+    if (!ph || !dragState) { if (ph) ph.remove(); return; }
+
+    const afterEl = ph.nextElementSibling;
+    const afterCardId = afterEl ? afterEl.dataset.cardId : null;
+    ph.remove();
+
+    moveCard(dragState.cardId, dragState.fromColId, col.id, afterCardId);
+    dragState = null;
+  });
+
+  el.appendChild(list);
+
+  // ── カード追加ボタン / フォーム
+  const addCardBtn = document.createElement('button');
+  addCardBtn.className = 'add-card-btn';
+  addCardBtn.textContent = '+ カードを追加';
+  addCardBtn.addEventListener('click', () => showAddCardForm(col.id, addCardBtn, formContainer));
+  el.appendChild(addCardBtn);
+
+  const formContainer = document.createElement('div');
+  formContainer.style.display = 'none';
+  el.appendChild(formContainer);
+
+  return el;
+}
+
+function buildCard(card, colId) {
+  const el = document.createElement('div');
+  el.className = 'card';
+  el.draggable = true;
+  el.dataset.cardId = card.id;
+
+  el.addEventListener('dragstart', e => {
+    dragState = { cardId: card.id, fromColId: colId };
+    el.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+  });
+
+  el.addEventListener('dragend', () => {
+    el.classList.remove('dragging');
+    document.querySelectorAll('.drop-placeholder').forEach(p => p.remove());
+    document.querySelectorAll('.column').forEach(c => c.classList.remove('drag-over'));
+  });
+
+  renderCardContent(el, card, colId);
+  return el;
+}
+
+function renderCardContent(el, card, colId) {
+  el.innerHTML = '';
+
+  const titleEl = document.createElement('div');
+  titleEl.className = 'card-title';
+  titleEl.textContent = card.title;
+  el.appendChild(titleEl);
+
+  if (card.desc) {
+    const descEl = document.createElement('div');
+    descEl.className = 'card-desc';
+    descEl.textContent = card.desc;
+    el.appendChild(descEl);
+  }
+
+  const actions = document.createElement('div');
+  actions.className = 'card-actions';
+
+  const editBtn = document.createElement('button');
+  editBtn.className = 'btn-edit';
+  editBtn.textContent = '編集';
+  editBtn.addEventListener('click', e => { e.stopPropagation(); showCardEditForm(el, card, colId); });
+
+  const delBtn = document.createElement('button');
+  delBtn.className = 'btn-delete';
+  delBtn.textContent = '削除';
+  delBtn.addEventListener('click', e => { e.stopPropagation(); deleteCard(card.id, colId); });
+
+  actions.appendChild(editBtn);
+  actions.appendChild(delBtn);
+  el.appendChild(actions);
+}
+
+function showCardEditForm(el, card, colId) {
+  el.draggable = false;
+  el.innerHTML = '';
+
+  const form = document.createElement('div');
+  form.className = 'card-edit-form';
+
+  const titleInput = document.createElement('input');
+  titleInput.type = 'text';
+  titleInput.value = card.title;
+  titleInput.placeholder = 'タイトル';
+
+  const descInput = document.createElement('textarea');
+  descInput.rows = 3;
+  descInput.value = card.desc || '';
+  descInput.placeholder = '説明（任意）';
+
+  const btns = document.createElement('div');
+  btns.className = 'card-actions';
+
+  const saveBtn = document.createElement('button');
+  saveBtn.className = 'btn-save';
+  saveBtn.textContent = '保存';
+  saveBtn.addEventListener('click', () => {
+    const newTitle = titleInput.value.trim();
+    if (!newTitle) { titleInput.focus(); return; }
+    card.title = newTitle;
+    card.desc  = descInput.value.trim();
+    saveData();
+    el.draggable = true;
+    renderCardContent(el, card, colId);
+  });
+
+  const cancelBtn = document.createElement('button');
+  cancelBtn.className = 'btn-cancel';
+  cancelBtn.textContent = 'キャンセル';
+  cancelBtn.addEventListener('click', () => {
+    el.draggable = true;
+    renderCardContent(el, card, colId);
+  });
+
+  btns.appendChild(saveBtn);
+  btns.appendChild(cancelBtn);
+  form.appendChild(titleInput);
+  form.appendChild(descInput);
+  form.appendChild(btns);
+  el.appendChild(form);
+  titleInput.focus();
+}
+
+function showAddCardForm(colId, btn, container) {
+  btn.style.display = 'none';
+  container.style.display = 'block';
+  container.innerHTML = '';
+
+  const form = document.createElement('div');
+  form.className = 'add-card-form';
+
+  const titleInput = document.createElement('input');
+  titleInput.type = 'text';
+  titleInput.placeholder = 'カードのタイトル';
+
+  const descInput = document.createElement('textarea');
+  descInput.rows = 3;
+  descInput.placeholder = '説明（任意）';
+
+  const btns = document.createElement('div');
+  btns.className = 'add-card-form-btns';
+
+  const addBtn = document.createElement('button');
+  addBtn.className = 'btn-save';
+  addBtn.textContent = '追加';
+  addBtn.addEventListener('click', () => {
+    const title = titleInput.value.trim();
+    if (!title) { titleInput.focus(); return; }
+    addCard(colId, title, descInput.value.trim());
+    close();
+  });
+
+  const cancelBtn = document.createElement('button');
+  cancelBtn.className = 'btn-cancel';
+  cancelBtn.textContent = 'キャンセル';
+  cancelBtn.addEventListener('click', close);
+
+  function close() {
+    container.style.display = 'none';
+    btn.style.display = '';
+  }
+
+  titleInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); addBtn.click(); }
+    if (e.key === 'Escape') close();
+  });
+
+  btns.appendChild(addBtn);
+  btns.appendChild(cancelBtn);
+  form.appendChild(titleInput);
+  form.appendChild(descInput);
+  form.appendChild(btns);
+  container.appendChild(form);
+  titleInput.focus();
+}
+
+function buildAddColumnWidget() {
+  const btn = document.createElement('button');
+  btn.id = 'add-column-btn';
+  btn.textContent = '＋ 列を追加';
+
+  const formEl = document.createElement('div');
+  formEl.id = 'add-column-form';
+  formEl.style.display = 'none';
+
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.placeholder = '列のタイトル';
+
+  const btns = document.createElement('div');
+  btns.id = 'add-column-form-btns';
+
+  const addBtn = document.createElement('button');
+  addBtn.className = 'btn-save';
+  addBtn.textContent = '追加';
+  addBtn.addEventListener('click', () => {
+    const title = input.value.trim();
+    if (!title) { input.focus(); return; }
+    addColumn(title);
+    close();
+  });
+
+  const cancelBtn = document.createElement('button');
+  cancelBtn.className = 'btn-cancel';
+  cancelBtn.textContent = 'キャンセル';
+  cancelBtn.addEventListener('click', close);
+
+  function open() {
+    btn.style.display = 'none';
+    formEl.style.display = 'flex';
+    formEl.style.flexDirection = 'column';
+    input.value = '';
+    setTimeout(() => input.focus(), 0);
+  }
+
+  function close() {
+    formEl.style.display = 'none';
+    btn.style.display = '';
+  }
+
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); addBtn.click(); }
+    if (e.key === 'Escape') close();
+  });
+
+  btn.addEventListener('click', open);
+
+  btns.appendChild(addBtn);
+  btns.appendChild(cancelBtn);
+  formEl.appendChild(input);
+  formEl.appendChild(btns);
+
+  const wrapper = document.createDocumentFragment();
+  wrapper.appendChild(btn);
+  wrapper.appendChild(formEl);
+
+  const div = document.createElement('div');
+  div.appendChild(btn);
+  div.appendChild(formEl);
+  return div;
+}
+
+// ── 列タイトル インライン編集 ────────────────────────
+function startColumnTitleEdit(col, titleEl) {
+  const input = document.createElement('input');
+  input.className = 'column-title-input';
+  input.type = 'text';
+  input.value = col.title;
+  titleEl.replaceWith(input);
+  input.focus();
+  input.select();
+
+  function confirm() {
+    const newTitle = input.value.trim();
+    if (newTitle) col.title = newTitle;
+    saveData();
+    render();
+  }
+
+  input.addEventListener('blur', confirm);
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); input.blur(); }
+    if (e.key === 'Escape') { input.removeEventListener('blur', confirm); render(); }
+  });
+}
+
+// ── データ操作 ──────────────────────────────────────
+function addColumn(title) {
+  state.columns.push({ id: uid(), title, cards: [] });
+  saveData();
+  render();
+}
+
+function deleteColumn(colId) {
+  state.columns = state.columns.filter(c => c.id !== colId);
+  saveData();
+  render();
+}
+
+function addCard(colId, title, desc) {
+  const col = state.columns.find(c => c.id === colId);
+  if (col) {
+    col.cards.push({ id: uid(), title, desc });
+    saveData();
+    render();
+  }
+}
+
+function deleteCard(cardId, colId) {
+  const col = state.columns.find(c => c.id === colId);
+  if (col) {
+    col.cards = col.cards.filter(c => c.id !== cardId);
+    saveData();
+    render();
+  }
+}
+
+function moveCard(cardId, fromColId, toColId, afterCardId) {
+  const fromCol = state.columns.find(c => c.id === fromColId);
+  const toCol   = state.columns.find(c => c.id === toColId);
+  if (!fromCol || !toCol) return;
+
+  const idx = fromCol.cards.findIndex(c => c.id === cardId);
+  if (idx === -1) return;
+  const [card] = fromCol.cards.splice(idx, 1);
+
+  if (afterCardId) {
+    const afterIdx = toCol.cards.findIndex(c => c.id === afterCardId);
+    toCol.cards.splice(afterIdx, 0, card);
+  } else {
+    toCol.cards.push(card);
+  }
+
+  saveData();
+  render();
+}
+
+// ── ドロップ位置計算 ────────────────────────────────
+function getDragAfterElement(list, y) {
+  const cards = [...list.querySelectorAll('.card:not(.dragging)')];
+  return cards.reduce((closest, child) => {
+    const box = child.getBoundingClientRect();
+    const offset = y - box.top - box.height / 2;
+    if (offset < 0 && offset > closest.offset) {
+      return { offset, element: child };
+    }
+    return closest;
+  }, { offset: Number.NEGATIVE_INFINITY }).element;
+}
+
+// ── 起動 ────────────────────────────────────────────
+render();
+</script>
+</body>
+</html>
