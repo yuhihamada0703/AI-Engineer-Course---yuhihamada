@@ -3,20 +3,29 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "dev": "vite",
+    "dev": "concurrently \"vite\" \"tsx watch server/index.ts\"",
+    "dev:client": "vite",
+    "dev:server": "tsx watch server/index.ts",
     "build": "tsc && vite build",
     "preview": "vite preview"
   },
   "type": "module",
   "dependencies": {
     "@hello-pangea/dnd": "^18.0.1",
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
     "react": "^19.2.6",
     "react-dom": "^19.2.6"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.15.21",
     "@types/react": "^19.2.15",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.2",
+    "concurrently": "^9.1.2",
+    "tsx": "^4.20.3",
     "typescript": "^6.0.3",
     "vite": "^8.0.14"
   }
