@@ -55,3 +55,9 @@ export async function reorder(columns: Record<string, string[]>): Promise<void> 
     body: JSON.stringify({ columns }),
   })
 }
+
+export async function searchBoard(keyword: string): Promise<BoardData> {
+  const res = await fetch(`${BASE}/board/search?q=${encodeURIComponent(keyword)}`)
+  if (!res.ok) throw new Error('Failed to search')
+  return res.json()
+}
