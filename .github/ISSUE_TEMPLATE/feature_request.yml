@@ -1,0 +1,66 @@
+name: 機能追加リクエスト
+description: 新機能や改善案を提案するためのテンプレート
+title: "feat: "
+labels: ["feature"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        新機能のリクエストありがとうございます。以下の項目をできる限り詳しく記入してください。
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: 概要
+      description: 追加したい機能を一言で説明してください。
+      placeholder: 例）カードに期限日を設定できるようにしたい
+    validations:
+      required: true
+
+  - type: textarea
+    id: motivation
+    attributes:
+      label: 背景・動機
+      description: なぜこの機能が必要か、どのような課題を解決するかを説明してください。
+      placeholder: 例）タスクの締め切りを視覚的に管理できないため、期日が近いタスクを見落としてしまう
+    validations:
+      required: true
+
+  - type: textarea
+    id: detail
+    attributes:
+      label: 詳細・実装案
+      description: 機能の詳細仕様や実装のアイデアがあれば記載してください。
+      placeholder: |
+        - カードに日付ピッカーを追加する
+        - 期限が今日のカードは赤く表示する
+        - 期限切れカードはボーダーを強調する
+    validations:
+      required: false
+
+  - type: dropdown
+    id: scope
+    attributes:
+      label: 影響範囲
+      description: この機能が影響するレイヤーを選択してください（複数選択可）。
+      multiple: true
+      options:
+        - frontend
+        - backend
+        - database
+        - docker
+        - docs
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: 完了条件
+      description: この機能が完了したとみなせる条件を列挙してください。
+      placeholder: |
+        - [ ] カード作成時に期限日を入力できる
+        - [ ] カード一覧で期限日が表示される
+        - [ ] 期限切れカードの色が変わる
+    validations:
+      required: false

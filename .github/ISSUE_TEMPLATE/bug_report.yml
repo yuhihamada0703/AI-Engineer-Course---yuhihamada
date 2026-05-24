@@ -1,0 +1,83 @@
+name: バグ報告
+description: 動作不具合を報告するためのテンプレート
+title: "fix: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        バグ報告ありがとうございます。再現できるよう詳細な情報をご記入ください。
+
+  - type: textarea
+    id: description
+    attributes:
+      label: バグの概要
+      description: どのような不具合が発生しているかを説明してください。
+      placeholder: 例）カードをドラッグ&ドロップで移動した後、ページをリロードすると元の位置に戻る
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: 再現手順
+      description: バグを再現するための手順を順番に記載してください。
+      placeholder: |
+        1. アプリを起動する
+        2. 「TODO」列のカードを「進行中」列にドラッグする
+        3. ページをリロードする
+        4. カードが「TODO」列に戻っている
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: 期待する動作
+      description: 本来どのような動作になるべきかを説明してください。
+      placeholder: 例）リロード後も「進行中」列にカードが残っているはず
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: 実際の動作
+      description: 実際に起きている動作を説明してください。
+      placeholder: 例）リロードすると「TODO」列に戻る
+    validations:
+      required: true
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: 深刻度
+      options:
+        - critical（アプリが使用不能になる）
+        - high（主要機能が動作しない）
+        - medium（一部機能が動作しない）
+        - low（軽微な表示崩れ・使い勝手の問題）
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: 環境情報
+      description: バグが発生した環境を記載してください。
+      placeholder: |
+        - OS: macOS 15.x
+        - ブラウザ: Chrome 120
+        - フロントエンド: localhost:5173
+        - バックエンド: localhost:8080（Spring Boot起動中）
+    validations:
+      required: false
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: エラーログ・スクリーンショット
+      description: ブラウザコンソールのエラーや、Spring Bootのスタックトレースがあれば貼り付けてください。
+      render: shell
+    validations:
+      required: false
