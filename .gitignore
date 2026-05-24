@@ -4,3 +4,8 @@ dist/
 server/dev.db
 server/dev.db-shm
 server/dev.db-wal
+
+# Spring Boot
+backend/data/
+backend/build/
+backend/.gradle/
