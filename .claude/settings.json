@@ -7,7 +7,21 @@
       "Bash(echo \"Frontend PID: $!\")",
       "Bash(curl -sf http://localhost:5173)",
       "Bash(git commit -m ' *)",
-      "Bash(gh pr create --title 'feat: キーワード検索APIとフロントエンド検索UIを実装する \\(#2\\)' --body ' *)"
+      "Bash(gh pr create --title 'feat: キーワード検索APIとフロントエンド検索UIを実装する \\(#2\\)' --body ' *)",
+      "Bash(gh pr create --repo yuhihamada0703/AI-Engineer-Course---yuhihamada --title 'chore: フロントエンドコードをfrontendディレクトリに移動する \\(#4\\)' --body ' *)",
+      "Bash(git -C \"/Users/user/Desktop/AI ENGINEER/taskmanegement\" stash)",
+      "Bash(git -C \"/Users/user/Desktop/AI ENGINEER/taskmanegement\" checkout main)",
+      "Bash(git -C \"/Users/user/Desktop/AI ENGINEER/taskmanegement\" pull origin main)",
+      "Bash(git -C \"/Users/user/Desktop/AI ENGINEER/taskmanegement\" checkout -b docs/issue-6-update-tech-stack-and-readme)",
+      "Bash(git -C \"/Users/user/Desktop/AI ENGINEER/taskmanegement\" restore --staged .claude/settings.json)",
+      "Bash(git -C \"/Users/user/Desktop/AI ENGINEER/taskmanegement\" restore .claude/settings.json)",
+      "Bash(git -C \"/Users/user/Desktop/AI ENGINEER/taskmanegement\" diff --staged README.md docs/tech-stack.md)",
+      "Bash(git -C '/Users/user/Desktop/AI ENGINEER/taskmanegement' commit -m ' *)",
+      "Bash(git -C \"/Users/user/Desktop/AI ENGINEER/taskmanegement\" push -u origin docs/issue-6-update-tech-stack-and-readme)",
+      "Bash(gh pr create --title 'docs: tech-stackのバージョンを実装値に更新し、READMEを充実させる \\(#6\\)' --body ' *)",
+      "Bash(git -C \"/Users/user/Desktop/AI ENGINEER/taskmanegement\" diff)",
+      "Bash(git -C \"/Users/user/Desktop/AI ENGINEER/taskmanegement\" add .claude/settings.json)",
+      "Bash(git -C \"/Users/user/Desktop/AI ENGINEER/taskmanegement\" push)"
     ]
   },
   "hooks": {
