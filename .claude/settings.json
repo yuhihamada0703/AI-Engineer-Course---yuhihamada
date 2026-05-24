@@ -6,7 +6,8 @@
       "Bash(npm run *)",
       "Bash(echo \"Frontend PID: $!\")",
       "Bash(curl -sf http://localhost:5173)",
-      "Bash(git commit -m ' *)"
+      "Bash(git commit -m ' *)",
+      "Bash(gh pr create --title 'feat: キーワード検索APIとフロントエンド検索UIを実装する \\(#2\\)' --body ' *)"
     ]
   },
   "hooks": {
