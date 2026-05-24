@@ -18,14 +18,14 @@
 
 ```bash
 # フロントエンド起動
-npm run dev
+cd frontend && npm run dev
 
 # バックエンド起動（Docker PostgreSQLが必要）
 docker compose up -d
 cd backend && ./gradlew bootRun --args='--spring.profiles.active=postgres'
 
 # TypeScriptビルド確認
-npm run build
+cd frontend && npm run build
 ```
 
 ---
@@ -138,14 +138,19 @@ PRのbodyには必ず `Closes #番号` または `Fixes #番号` を含め、マ
 
 ```
 taskmanegement/
-├── src/                    # Reactフロントエンド (TypeScript)
-│   ├── App.tsx
-│   ├── CardItem.tsx
-│   ├── ColumnItem.tsx
-│   ├── api.ts              # バックエンドAPIクライアント
-│   ├── types.ts            # 共通型定義
-│   └── storage.ts
-├── server/                 # Node.js開発用サーバー
+├── frontend/               # Reactフロントエンド (TypeScript)
+│   ├── src/
+│   │   ├── App.tsx
+│   │   ├── CardItem.tsx
+│   │   ├── ColumnItem.tsx
+│   │   ├── api.ts          # バックエンドAPIクライアント
+│   │   ├── types.ts        # 共通型定義
+│   │   └── storage.ts
+│   ├── server/             # Node.js開発用サーバー
+│   ├── index.html
+│   ├── vite.config.ts
+│   ├── tsconfig.json
+│   └── package.json
 ├── backend/                # Spring Bootバックエンド (Java)
 │   └── src/main/java/com/taskboard/
 │       ├── controller/     # RESTコントローラー
