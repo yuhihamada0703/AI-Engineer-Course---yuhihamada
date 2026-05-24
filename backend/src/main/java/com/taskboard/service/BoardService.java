@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -53,6 +55,44 @@ public class BoardService {
             columnsMap.put(col.getId(),
                     new BoardResponse.ColumnDto(col.getId(), col.getTitle(), colCardIds.get(col.getId())));
             columnOrder.add(col.getId());
+        }
+
+        return new BoardResponse(columnsMap, cardsMap, columnOrder);
+    }
+
+    @Transactional(readOnly = true)
+    public BoardResponse searchBoard(String keyword) {
+        List<CardEntity> matchedCards = cardRepository.searchByKeyword(keyword);
+
+        Set<String> matchedColumnIds = matchedCards.stream()
+                .map(c -> c.getColumn().getId())
+                .collect(Collectors.toCollection(java.util.LinkedHashSet::new));
+
+        List<ColumnEntity> allCols = columnRepository.findAllByOrderByPositionAsc();
+
+        Map<String, List<String>> colCardIds = new LinkedHashMap<>();
+        for (ColumnEntity col : allCols) {
+            if (matchedColumnIds.contains(col.getId())) {
+                colCardIds.put(col.getId(), new ArrayList<>());
+            }
+        }
+
+        Map<String, BoardResponse.CardDto> cardsMap = new LinkedHashMap<>();
+        for (CardEntity card : matchedCards) {
+            String colId = card.getColumn().getId();
+            colCardIds.get(colId).add(card.getId());
+            cardsMap.put(card.getId(),
+                    new BoardResponse.CardDto(card.getId(), card.getTitle(), card.getDescription()));
+        }
+
+        Map<String, BoardResponse.ColumnDto> columnsMap = new LinkedHashMap<>();
+        List<String> columnOrder = new ArrayList<>();
+        for (ColumnEntity col : allCols) {
+            if (matchedColumnIds.contains(col.getId())) {
+                columnsMap.put(col.getId(),
+                        new BoardResponse.ColumnDto(col.getId(), col.getTitle(), colCardIds.get(col.getId())));
+                columnOrder.add(col.getId());
+            }
         }
 
         return new BoardResponse(columnsMap, cardsMap, columnOrder);

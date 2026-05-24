@@ -19,6 +19,11 @@ public class BoardController {
         return boardService.getBoard();
     }
 
+    @GetMapping("/board/search")
+    public BoardResponse searchBoard(@RequestParam String q) {
+        return boardService.searchBoard(q);
+    }
+
     @PutMapping("/board/reorder")
     public SuccessResponse reorder(@RequestBody ReorderRequest request) {
         boardService.reorder(request);

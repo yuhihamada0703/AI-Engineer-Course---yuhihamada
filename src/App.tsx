@@ -3,6 +3,7 @@ import { DragDropContext, type DropResult } from '@hello-pangea/dnd'
 import type { BoardData } from './types'
 import * as api from './api'
 import ColumnItem from './ColumnItem'
+import SearchBar from './SearchBar'
 
 function generateId() {
   return `id-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`
@@ -16,6 +17,9 @@ export default function App() {
   const [loading, setLoading] = useState(true)
   const [addingColumn, setAddingColumn] = useState(false)
   const [newColTitle, setNewColTitle] = useState('')
+  const [searchKeyword, setSearchKeyword] = useState('')
+  const [searchResult, setSearchResult] = useState<BoardData | null>(null)
+  const [searching, setSearching] = useState(false)
 
   useEffect(() => {
     api.getBoard().then(data => {
@@ -115,6 +119,24 @@ export default function App() {
     api.deleteCard(cardId).catch(console.error)
   }
 
+  async function handleSearch(keyword: string) {
+    setSearching(true)
+    try {
+      const result = await api.searchBoard(keyword)
+      setSearchResult(result)
+      setSearchKeyword(keyword)
+    } catch (e) {
+      console.error(e)
+    } finally {
+      setSearching(false)
+    }
+  }
+
+  function handleClear() {
+    setSearchResult(null)
+    setSearchKeyword('')
+  }
+
   function editCard(cardId: string, title: string, description: string) {
     setBoard(prev => ({
       ...prev,
@@ -145,52 +167,90 @@ export default function App() {
       <div style={{ position: 'relative', zIndex: 1 }}>
         <header style={{ padding: '12px 24px', display: 'flex', alignItems: 'center', gap: 12, borderBottom: '1px solid #e2c98a', background: 'rgba(255,248,225,0.85)', backdropFilter: 'blur(4px)' }}>
           <h1 style={{ margin: 0, color: '#92400e', fontSize: 20, fontWeight: 700, letterSpacing: '-0.5px' }}>🐾 タスクボード</h1>
+          <SearchBar onSearch={handleSearch} onClear={handleClear} isSearching={searchResult !== null} />
+          {searching && <span style={{ fontSize: 13, color: '#92400e' }}>検索中...</span>}
         </header>
 
-        <DragDropContext onDragEnd={onDragEnd}>
-          <div style={{ display: 'flex', gap: 16, padding: 20, overflowX: 'auto', alignItems: 'flex-start' }}>
-            {board.columnOrder.map(colId => {
-              const col = board.columns[colId]
-              const cards = col.cardIds.map(id => board.cards[id]).filter(Boolean)
-              return (
-                <ColumnItem
-                  key={colId}
-                  column={col}
-                  cards={cards}
-                  onAddCard={addCard}
-                  onDeleteCard={deleteCard}
-                  onEditCard={editCard}
-                  onDeleteColumn={deleteColumn}
-                  onRenameColumn={renameColumn}
-                />
-              )
-            })}
-
-            {addingColumn ? (
-              <div style={{ background: '#f1f5f9', borderRadius: 10, padding: 12, width: 280, minWidth: 280 }}>
-                <input
-                  autoFocus
-                  value={newColTitle}
-                  onChange={e => setNewColTitle(e.target.value)}
-                  onKeyDown={e => e.key === 'Enter' && addColumn()}
-                  placeholder="列のタイトル"
-                  style={{ width: '100%', padding: '6px 8px', border: '1px solid #cbd5e1', borderRadius: 4, fontSize: 14, marginBottom: 8, boxSizing: 'border-box' }}
-                />
-                <div style={{ display: 'flex', gap: 6 }}>
-                  <button onClick={addColumn} style={{ background: '#3b82f6', color: 'white', border: 'none', borderRadius: 4, padding: '6px 14px', fontSize: 13, cursor: 'pointer' }}>追加</button>
-                  <button onClick={() => { setAddingColumn(false); setNewColTitle('') }} style={{ background: 'transparent', color: '#64748b', border: '1px solid #cbd5e1', borderRadius: 4, padding: '6px 14px', fontSize: 13, cursor: 'pointer' }}>キャンセル</button>
-                </div>
-              </div>
+        {searchResult !== null ? (
+          <div style={{ padding: 20 }}>
+            <div style={{ marginBottom: 12, fontSize: 14, color: '#92400e' }}>
+              「{searchKeyword}」の検索結果: {Object.keys(searchResult.cards).length}件
+            </div>
+            {searchResult.columnOrder.length === 0 ? (
+              <div style={{ color: '#64748b', fontSize: 14 }}>一致するカードが見つかりませんでした。</div>
             ) : (
-              <button
-                onClick={() => setAddingColumn(true)}
-                style={{ background: 'rgba(255,248,225,0.7)', border: '1px solid #e2c98a', borderRadius: 10, padding: '10px 20px', color: '#92400e', fontSize: 14, cursor: 'pointer', whiteSpace: 'nowrap', minWidth: 200 }}
-              >
-                + 列を追加
-              </button>
+              <div style={{ display: 'flex', gap: 16, overflowX: 'auto', alignItems: 'flex-start' }}>
+                {searchResult.columnOrder.map(colId => {
+                  const col = searchResult.columns[colId]
+                  const cards = col.cardIds.map(id => searchResult.cards[id]).filter(Boolean)
+                  return (
+                    <div key={colId} style={{ background: 'rgba(255,248,225,0.9)', borderRadius: 10, padding: '12px', width: 280, minWidth: 280, border: '1px solid #e2c98a' }}>
+                      <div style={{ fontWeight: 600, fontSize: 14, color: '#92400e', marginBottom: 10 }}>
+                        {col.title}
+                        <span style={{ marginLeft: 6, background: '#92400e', color: '#fff', borderRadius: 10, padding: '1px 7px', fontSize: 11, fontWeight: 400 }}>{cards.length}</span>
+                      </div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                        {cards.map(card => (
+                          <div key={card.id} style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 6, padding: '8px 10px' }}>
+                            <div style={{ fontSize: 14, fontWeight: 500, color: '#1e293b' }}>{card.title}</div>
+                            {card.description && (
+                              <div style={{ fontSize: 12, color: '#64748b', marginTop: 4 }}>{card.description}</div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
             )}
           </div>
-        </DragDropContext>
+        ) : (
+          <DragDropContext onDragEnd={onDragEnd}>
+            <div style={{ display: 'flex', gap: 16, padding: 20, overflowX: 'auto', alignItems: 'flex-start' }}>
+              {board.columnOrder.map(colId => {
+                const col = board.columns[colId]
+                const cards = col.cardIds.map(id => board.cards[id]).filter(Boolean)
+                return (
+                  <ColumnItem
+                    key={colId}
+                    column={col}
+                    cards={cards}
+                    onAddCard={addCard}
+                    onDeleteCard={deleteCard}
+                    onEditCard={editCard}
+                    onDeleteColumn={deleteColumn}
+                    onRenameColumn={renameColumn}
+                  />
+                )
+              })}
+
+              {addingColumn ? (
+                <div style={{ background: '#f1f5f9', borderRadius: 10, padding: 12, width: 280, minWidth: 280 }}>
+                  <input
+                    autoFocus
+                    value={newColTitle}
+                    onChange={e => setNewColTitle(e.target.value)}
+                    onKeyDown={e => e.key === 'Enter' && addColumn()}
+                    placeholder="列のタイトル"
+                    style={{ width: '100%', padding: '6px 8px', border: '1px solid #cbd5e1', borderRadius: 4, fontSize: 14, marginBottom: 8, boxSizing: 'border-box' }}
+                  />
+                  <div style={{ display: 'flex', gap: 6 }}>
+                    <button onClick={addColumn} style={{ background: '#3b82f6', color: 'white', border: 'none', borderRadius: 4, padding: '6px 14px', fontSize: 13, cursor: 'pointer' }}>追加</button>
+                    <button onClick={() => { setAddingColumn(false); setNewColTitle('') }} style={{ background: 'transparent', color: '#64748b', border: '1px solid #cbd5e1', borderRadius: 4, padding: '6px 14px', fontSize: 13, cursor: 'pointer' }}>キャンセル</button>
+                  </div>
+                </div>
+              ) : (
+                <button
+                  onClick={() => setAddingColumn(true)}
+                  style={{ background: 'rgba(255,248,225,0.7)', border: '1px solid #e2c98a', borderRadius: 10, padding: '10px 20px', color: '#92400e', fontSize: 14, cursor: 'pointer', whiteSpace: 'nowrap', minWidth: 200 }}
+                >
+                  + 列を追加
+                </button>
+              )}
+            </div>
+          </DragDropContext>
+        )}
       </div>
     </div>
   )
