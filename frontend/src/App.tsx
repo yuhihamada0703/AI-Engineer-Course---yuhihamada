@@ -97,14 +97,14 @@ export default function App() {
     api.renameColumn(columnId, title).catch(console.error)
   }
 
-  function addCard(columnId: string, title: string, description: string) {
+  function addCard(columnId: string, title: string, description: string, priority: string) {
     const id = generateId()
     setBoard(prev => ({
       ...prev,
-      cards: { ...prev.cards, [id]: { id, title, description } },
+      cards: { ...prev.cards, [id]: { id, title, description, priority: priority as import('./types').Priority } },
       columns: { ...prev.columns, [columnId]: { ...prev.columns[columnId], cardIds: [...prev.columns[columnId].cardIds, id] } },
     }))
-    api.addCard(id, title, description, columnId).catch(console.error)
+    api.addCard(id, title, description, columnId, priority).catch(console.error)
   }
 
   function deleteCard(columnId: string, cardId: string) {
@@ -138,12 +138,28 @@ export default function App() {
     setSearchKeyword('')
   }
 
-  function editCard(cardId: string, title: string, description: string) {
+  function editCard(cardId: string, title: string, description: string, priority: string) {
     setBoard(prev => ({
       ...prev,
-      cards: { ...prev.cards, [cardId]: { ...prev.cards[cardId], title, description } },
+      cards: { ...prev.cards, [cardId]: { ...prev.cards[cardId], title, description, priority: priority as import('./types').Priority } },
     }))
-    api.editCard(cardId, title, description).catch(console.error)
+    api.editCard(cardId, title, description, priority).catch(console.error)
+  }
+
+  const PRIORITY_ORDER: Record<string, number> = { HIGH: 0, MEDIUM: 1, LOW: 2 }
+
+  function reorderColumnByPriority(columnId: string) {
+    setBoard(prev => {
+      const col = prev.columns[columnId]
+      const sorted = [...col.cardIds].sort((a, b) => {
+        const pa = PRIORITY_ORDER[prev.cards[a]?.priority ?? 'MEDIUM'] ?? 1
+        const pb = PRIORITY_ORDER[prev.cards[b]?.priority ?? 'MEDIUM'] ?? 1
+        return pa - pb
+      })
+      const next = { ...prev, columns: { ...prev.columns, [columnId]: { ...col, cardIds: sorted } } }
+      api.reorder(Object.fromEntries(Object.values(next.columns).map(c => [c.id, c.cardIds]))).catch(console.error)
+      return next
+    })
   }
 
   if (loading) {
@@ -222,6 +238,7 @@ export default function App() {
                     onEditCard={editCard}
                     onDeleteColumn={deleteColumn}
                     onRenameColumn={renameColumn}
+                    onSortByPriority={reorderColumnByPriority}
                   />
                 )
               })}

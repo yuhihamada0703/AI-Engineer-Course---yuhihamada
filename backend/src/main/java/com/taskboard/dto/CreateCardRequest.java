@@ -12,4 +12,5 @@ public class CreateCardRequest {
     private String title;
     private String description;
     private String columnId;
+    private String priority;
 }
