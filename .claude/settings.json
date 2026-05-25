@@ -11,7 +11,20 @@
       "Bash(curl -s -X POST http://localhost:8080/api/cards -H 'Content-Type: application/json' -d '{\"id\":\"card-auto-1\",\"title\":\"朝のミーティング準備\",\"description\":\"アジェンダを作成して参加者に共有する\",\"columnId\":\"col-1\"}')",
       "Bash(curl -s -X POST http://localhost:8080/api/cards -H 'Content-Type: application/json' -d '{\"id\":\"card-auto-2\",\"title\":\"ドキュメント更新\",\"description\":\"API仕様書を最新版に反映する\",\"columnId\":\"col-1\"}')",
       "Bash(curl -s -X POST http://localhost:8080/api/cards -H 'Content-Type: application/json' -d '{\"id\":\"card-auto-3\",\"title\":\"バグ調査\",\"description\":\"ログイン画面でエラーが発生する件を調査中\",\"columnId\":\"col-2\"}')",
-      "Bash(curl -s -X POST http://localhost:8080/api/cards -H 'Content-Type: application/json' -d '{\"id\":\"card-auto-4\",\"title\":\"デプロイ作業\",\"description\":\"ステージング環境へのリリース完了\",\"columnId\":\"col-3\"}')"
+      "Bash(curl -s -X POST http://localhost:8080/api/cards -H 'Content-Type: application/json' -d '{\"id\":\"card-auto-4\",\"title\":\"デプロイ作業\",\"description\":\"ステージング環境へのリリース完了\",\"columnId\":\"col-3\"}')",
+      "Bash(gh pr create --title 'feat: カードに優先度（高・中・低）機能を追加する \\(#10\\)' --body ' *)",
+      "Bash(kill 9833)",
+      "Bash(lsof -i:8080)",
+      "Bash(echo \"Backend starting with PID $!\")",
+      "Bash(node -e \"const { chromium } = require\\('playwright'\\); chromium.launch\\(\\).then\\(b => { b.close\\(\\); console.log\\('playwright ok'\\) }\\).catch\\(e => console.log\\('no playwright:', e.message\\)\\)\")",
+      "Bash(npx playwright *)",
+      "Bash(npm init *)",
+      "Bash(npm install *)",
+      "Bash(node /tmp/verify_priority.mjs)",
+      "Read(//tmp/**)",
+      "Read(//private/tmp/**)",
+      "Bash(gh pr create --title 'feat: 列ごとに優先度順で並び替えてDBに保存する機能を追加する \\(#12\\)' --body ' *)",
+      "Bash(lsof -i:5173 -i:8080)"
     ]
   },
   "hooks": {
