@@ -27,4 +27,7 @@ public class CardEntity {
 
     @Column(nullable = false)
     private int position;
+
+    @Column(nullable = false, length = 10)
+    private String priority = "MEDIUM";
 }

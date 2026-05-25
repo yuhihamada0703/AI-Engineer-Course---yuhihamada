@@ -1,22 +1,26 @@
 import { useState } from 'react'
 import { Draggable } from '@hello-pangea/dnd'
-import type { Card } from './types'
+import type { Card, Priority } from './types'
 
 interface Props {
   card: Card
   index: number
   onDelete: (cardId: string) => void
-  onEdit: (cardId: string, title: string, description: string) => void
+  onEdit: (cardId: string, title: string, description: string, priority: string) => void
 }
+
+const PRIORITY_LABEL: Record<Priority, string> = { HIGH: '高', MEDIUM: '中', LOW: '低' }
+const PRIORITY_COLOR: Record<Priority, string> = { HIGH: '#ef4444', MEDIUM: '#f59e0b', LOW: '#22c55e' }
 
 export default function CardItem({ card, index, onDelete, onEdit }: Props) {
   const [editing, setEditing] = useState(false)
   const [title, setTitle] = useState(card.title)
   const [description, setDescription] = useState(card.description)
+  const [priority, setPriority] = useState<Priority>(card.priority ?? 'MEDIUM')
 
   function handleSave() {
     if (title.trim()) {
-      onEdit(card.id, title.trim(), description.trim())
+      onEdit(card.id, title.trim(), description.trim(), priority)
       setEditing(false)
     }
   }
@@ -54,14 +58,36 @@ export default function CardItem({ card, index, onDelete, onEdit }: Props) {
                 style={{ ...inputStyle, resize: 'vertical', minHeight: 60 }}
                 placeholder="説明（任意）"
               />
+              <select
+                value={priority}
+                onChange={e => setPriority(e.target.value as Priority)}
+                style={{ ...inputStyle, marginBottom: 6 }}
+              >
+                <option value="HIGH">高</option>
+                <option value="MEDIUM">中</option>
+                <option value="LOW">低</option>
+              </select>
               <div style={{ display: 'flex', gap: 6, marginTop: 4 }}>
                 <button onClick={handleSave} style={btnPrimary}>保存</button>
-                <button onClick={() => { setEditing(false); setTitle(card.title); setDescription(card.description) }} style={btnGhost}>キャンセル</button>
+                <button onClick={() => { setEditing(false); setTitle(card.title); setDescription(card.description); setPriority(card.priority ?? 'MEDIUM') }} style={btnGhost}>キャンセル</button>
               </div>
             </div>
           ) : (
             <div>
-              <div style={{ fontWeight: 600, fontSize: 14, marginBottom: description ? 4 : 0 }}>{card.title}</div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: description ? 4 : 0 }}>
+                <span style={{ fontWeight: 600, fontSize: 14, flex: 1 }}>{card.title}</span>
+                <span style={{
+                  fontSize: 11,
+                  fontWeight: 600,
+                  color: '#fff',
+                  background: PRIORITY_COLOR[card.priority ?? 'MEDIUM'],
+                  borderRadius: 4,
+                  padding: '1px 6px',
+                  flexShrink: 0,
+                }}>
+                  {PRIORITY_LABEL[card.priority ?? 'MEDIUM']}
+                </span>
+              </div>
               {card.description && <div style={{ fontSize: 12, color: '#64748b' }}>{card.description}</div>}
               <div style={{ display: 'flex', gap: 6, marginTop: 6 }}>
                 <button onClick={() => setEditing(true)} style={btnSmall}>編集</button>

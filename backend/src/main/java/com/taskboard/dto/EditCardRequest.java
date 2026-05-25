@@ -10,4 +10,5 @@ import lombok.Setter;
 public class EditCardRequest {
     private String title;
     private String description;
+    private String priority;
 }

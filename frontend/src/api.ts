@@ -28,19 +28,19 @@ export async function deleteColumn(id: string): Promise<void> {
   await fetch(`${BASE}/columns/${id}`, { method: 'DELETE' })
 }
 
-export async function addCard(id: string, title: string, description: string, columnId: string): Promise<void> {
+export async function addCard(id: string, title: string, description: string, columnId: string, priority: string): Promise<void> {
   await fetch(`${BASE}/cards`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ id, title, description, columnId }),
+    body: JSON.stringify({ id, title, description, columnId, priority }),
   })
 }
 
-export async function editCard(id: string, title: string, description: string): Promise<void> {
+export async function editCard(id: string, title: string, description: string, priority: string): Promise<void> {
   await fetch(`${BASE}/cards/${id}`, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ title, description }),
+    body: JSON.stringify({ title, description, priority }),
   })
 }
 

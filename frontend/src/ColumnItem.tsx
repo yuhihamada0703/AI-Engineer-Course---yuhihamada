@@ -6,9 +6,9 @@ import CardItem from './CardItem'
 interface Props {
   column: Column
   cards: Card[]
-  onAddCard: (columnId: string, title: string, description: string) => void
+  onAddCard: (columnId: string, title: string, description: string, priority: string) => void
   onDeleteCard: (columnId: string, cardId: string) => void
-  onEditCard: (cardId: string, title: string, description: string) => void
+  onEditCard: (cardId: string, title: string, description: string, priority: string) => void
   onDeleteColumn: (columnId: string) => void
   onRenameColumn: (columnId: string, title: string) => void
 }
@@ -17,14 +17,16 @@ export default function ColumnItem({ column, cards, onAddCard, onDeleteCard, onE
   const [addingCard, setAddingCard] = useState(false)
   const [newCardTitle, setNewCardTitle] = useState('')
   const [newCardDesc, setNewCardDesc] = useState('')
+  const [newCardPriority, setNewCardPriority] = useState('MEDIUM')
   const [editingTitle, setEditingTitle] = useState(false)
   const [colTitle, setColTitle] = useState(column.title)
 
   function handleAddCard() {
     if (newCardTitle.trim()) {
-      onAddCard(column.id, newCardTitle.trim(), newCardDesc.trim())
+      onAddCard(column.id, newCardTitle.trim(), newCardDesc.trim(), newCardPriority)
       setNewCardTitle('')
       setNewCardDesc('')
+      setNewCardPriority('MEDIUM')
       setAddingCard(false)
     }
   }
@@ -124,9 +126,18 @@ export default function ColumnItem({ column, cards, onAddCard, onDeleteCard, onE
             placeholder="説明（任意）"
             style={{ ...inputStyle, resize: 'vertical', minHeight: 50 }}
           />
+          <select
+            value={newCardPriority}
+            onChange={e => setNewCardPriority(e.target.value)}
+            style={{ ...inputStyle, marginBottom: 6 }}
+          >
+            <option value="HIGH">高</option>
+            <option value="MEDIUM">中</option>
+            <option value="LOW">低</option>
+          </select>
           <div style={{ display: 'flex', gap: 6, marginTop: 4 }}>
             <button onClick={handleAddCard} style={btnPrimary}>追加</button>
-            <button onClick={() => { setAddingCard(false); setNewCardTitle(''); setNewCardDesc('') }} style={btnGhost}>キャンセル</button>
+            <button onClick={() => { setAddingCard(false); setNewCardTitle(''); setNewCardDesc(''); setNewCardPriority('MEDIUM') }} style={btnGhost}>キャンセル</button>
           </div>
         </div>
       ) : (

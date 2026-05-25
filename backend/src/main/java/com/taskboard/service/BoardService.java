@@ -46,7 +46,7 @@ public class BoardService {
                 ids.add(card.getId());
             }
             cardsMap.put(card.getId(),
-                    new BoardResponse.CardDto(card.getId(), card.getTitle(), card.getDescription()));
+                    new BoardResponse.CardDto(card.getId(), card.getTitle(), card.getDescription(), card.getPriority()));
         }
 
         Map<String, BoardResponse.ColumnDto> columnsMap = new LinkedHashMap<>();
@@ -82,7 +82,7 @@ public class BoardService {
             String colId = card.getColumn().getId();
             colCardIds.get(colId).add(card.getId());
             cardsMap.put(card.getId(),
-                    new BoardResponse.CardDto(card.getId(), card.getTitle(), card.getDescription()));
+                    new BoardResponse.CardDto(card.getId(), card.getTitle(), card.getDescription(), card.getPriority()));
         }
 
         Map<String, BoardResponse.ColumnDto> columnsMap = new LinkedHashMap<>();

@@ -1,7 +1,10 @@
+export type Priority = 'HIGH' | 'MEDIUM' | 'LOW'
+
 export interface Card {
   id: string
   title: string
   description: string
+  priority: Priority
 }
 
 export interface Column {

@@ -29,6 +29,7 @@ public class CardService {
         card.setId(req.getId());
         card.setTitle(req.getTitle());
         card.setDescription(req.getDescription() != null ? req.getDescription() : "");
+        card.setPriority(req.getPriority() != null ? req.getPriority() : "MEDIUM");
         card.setColumn(col);
         card.setPosition(nextPos);
         cardRepository.save(card);
@@ -39,6 +40,9 @@ public class CardService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Card not found: " + id));
         card.setTitle(req.getTitle());
         card.setDescription(req.getDescription() != null ? req.getDescription() : "");
+        if (req.getPriority() != null) {
+            card.setPriority(req.getPriority());
+        }
     }
 
     public void deleteCard(String id) {

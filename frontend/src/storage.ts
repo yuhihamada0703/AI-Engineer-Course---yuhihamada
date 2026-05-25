@@ -10,7 +10,7 @@ const defaultData: BoardData = {
     'col-3': { id: 'col-3', title: 'Done', cardIds: [] },
   },
   cards: {
-    'card-1': { id: 'card-1', title: 'サンプルタスク', description: 'ここにタスクの詳細を書きます' },
+    'card-1': { id: 'card-1', title: 'サンプルタスク', description: 'ここにタスクの詳細を書きます', priority: 'MEDIUM' },
   },
 }
 
