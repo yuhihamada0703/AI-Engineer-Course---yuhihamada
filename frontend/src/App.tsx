@@ -10,6 +10,7 @@ function generateId() {
 }
 
 const ANIMALS = ['🐱', '🐶', '🐼', '🐨', '🦊', '🐰', '🐸', '🐧', '🦁', '🐯']
+const BG_COUNT = (Math.ceil(window.innerWidth / 60) + 1) * (Math.ceil(window.innerHeight / 60) + 1)
 const emptyBoard: BoardData = { columns: {}, cards: {}, columnOrder: [] }
 
 export default function App() {
@@ -160,7 +161,7 @@ export default function App() {
         display: 'grid', gridTemplateColumns: 'repeat(auto-fill, 60px)', gridTemplateRows: 'repeat(auto-fill, 60px)',
         gap: 0, opacity: 0.18, fontSize: 36, lineHeight: '60px', textAlign: 'center', userSelect: 'none', overflow: 'hidden',
       }}>
-        {Array.from({ length: 300 }).map((_, i) => (
+        {Array.from({ length: BG_COUNT }).map((_, i) => (
           <span key={i}>{ANIMALS[i % ANIMALS.length]}</span>
         ))}
       </div>
