@@ -7,7 +7,11 @@
       "Bash(echo \"Frontend PID: $!\")",
       "Bash(curl -sf http://localhost:5173)",
       "Bash(git commit -m ' *)",
-      "Bash(gh pr create --title 'feat: キーワード検索APIとフロントエンド検索UIを実装する \\(#2\\)' --body ' *)"
+      "Bash(gh pr create --title 'feat: キーワード検索APIとフロントエンド検索UIを実装する \\(#2\\)' --body ' *)",
+      "Bash(curl -s -X POST http://localhost:8080/api/cards -H 'Content-Type: application/json' -d '{\"id\":\"card-auto-1\",\"title\":\"朝のミーティング準備\",\"description\":\"アジェンダを作成して参加者に共有する\",\"columnId\":\"col-1\"}')",
+      "Bash(curl -s -X POST http://localhost:8080/api/cards -H 'Content-Type: application/json' -d '{\"id\":\"card-auto-2\",\"title\":\"ドキュメント更新\",\"description\":\"API仕様書を最新版に反映する\",\"columnId\":\"col-1\"}')",
+      "Bash(curl -s -X POST http://localhost:8080/api/cards -H 'Content-Type: application/json' -d '{\"id\":\"card-auto-3\",\"title\":\"バグ調査\",\"description\":\"ログイン画面でエラーが発生する件を調査中\",\"columnId\":\"col-2\"}')",
+      "Bash(curl -s -X POST http://localhost:8080/api/cards -H 'Content-Type: application/json' -d '{\"id\":\"card-auto-4\",\"title\":\"デプロイ作業\",\"description\":\"ステージング環境へのリリース完了\",\"columnId\":\"col-3\"}')"
     ]
   },
   "hooks": {
