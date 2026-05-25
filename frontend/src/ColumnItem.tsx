@@ -11,9 +11,10 @@ interface Props {
   onEditCard: (cardId: string, title: string, description: string, priority: string) => void
   onDeleteColumn: (columnId: string) => void
   onRenameColumn: (columnId: string, title: string) => void
+  onSortByPriority: (columnId: string) => void
 }
 
-export default function ColumnItem({ column, cards, onAddCard, onDeleteCard, onEditCard, onDeleteColumn, onRenameColumn }: Props) {
+export default function ColumnItem({ column, cards, onAddCard, onDeleteCard, onEditCard, onDeleteColumn, onRenameColumn, onSortByPriority }: Props) {
   const [addingCard, setAddingCard] = useState(false)
   const [newCardTitle, setNewCardTitle] = useState('')
   const [newCardDesc, setNewCardDesc] = useState('')
@@ -73,6 +74,13 @@ export default function ColumnItem({ column, cards, onAddCard, onDeleteCard, onE
         <span style={{ background: '#cbd5e1', borderRadius: 12, fontSize: 11, padding: '1px 7px', color: '#475569' }}>
           {cards.length}
         </span>
+        <button
+          onClick={() => onSortByPriority(column.id)}
+          style={{ background: 'transparent', border: '1px solid #e2c98a', borderRadius: 4, color: '#92400e', cursor: 'pointer', fontSize: 11, padding: '1px 6px', lineHeight: 1.6 }}
+          title="優先度順に並び替えてDBに保存"
+        >
+          優先度順
+        </button>
         <button
           onClick={() => onDeleteColumn(column.id)}
           style={{ background: 'transparent', border: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: 16, lineHeight: 1 }}

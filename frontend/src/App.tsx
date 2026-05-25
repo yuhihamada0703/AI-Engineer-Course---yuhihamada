@@ -146,6 +146,22 @@ export default function App() {
     api.editCard(cardId, title, description, priority).catch(console.error)
   }
 
+  const PRIORITY_ORDER: Record<string, number> = { HIGH: 0, MEDIUM: 1, LOW: 2 }
+
+  function reorderColumnByPriority(columnId: string) {
+    setBoard(prev => {
+      const col = prev.columns[columnId]
+      const sorted = [...col.cardIds].sort((a, b) => {
+        const pa = PRIORITY_ORDER[prev.cards[a]?.priority ?? 'MEDIUM'] ?? 1
+        const pb = PRIORITY_ORDER[prev.cards[b]?.priority ?? 'MEDIUM'] ?? 1
+        return pa - pb
+      })
+      const next = { ...prev, columns: { ...prev.columns, [columnId]: { ...col, cardIds: sorted } } }
+      api.reorder(Object.fromEntries(Object.values(next.columns).map(c => [c.id, c.cardIds]))).catch(console.error)
+      return next
+    })
+  }
+
   if (loading) {
     return (
       <div style={{ minHeight: '100vh', background: '#fef9f0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, color: '#92400e' }}>
@@ -222,6 +238,7 @@ export default function App() {
                     onEditCard={editCard}
                     onDeleteColumn={deleteColumn}
                     onRenameColumn={renameColumn}
+                    onSortByPriority={reorderColumnByPriority}
                   />
                 )
               })}
