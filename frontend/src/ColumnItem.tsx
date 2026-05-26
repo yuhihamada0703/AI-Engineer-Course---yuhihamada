@@ -1,14 +1,14 @@
 import { useState } from 'react'
 import { Droppable } from '@hello-pangea/dnd'
-import type { Column, Card } from './types'
+import type { Column, Card, Priority } from './types'
 import CardItem from './CardItem'
 
 interface Props {
   column: Column
   cards: Card[]
-  onAddCard: (columnId: string, title: string, description: string, priority: string) => void
+  onAddCard: (columnId: string, title: string, description: string, priority: Priority) => void
   onDeleteCard: (columnId: string, cardId: string) => void
-  onEditCard: (cardId: string, title: string, description: string, priority: string) => void
+  onEditCard: (cardId: string, title: string, description: string, priority: Priority) => void
   onDeleteColumn: (columnId: string) => void
   onRenameColumn: (columnId: string, title: string) => void
   onSortByPriority: (columnId: string) => void
@@ -18,7 +18,7 @@ export default function ColumnItem({ column, cards, onAddCard, onDeleteCard, onE
   const [addingCard, setAddingCard] = useState(false)
   const [newCardTitle, setNewCardTitle] = useState('')
   const [newCardDesc, setNewCardDesc] = useState('')
-  const [newCardPriority, setNewCardPriority] = useState('MEDIUM')
+  const [newCardPriority, setNewCardPriority] = useState<Priority>('MEDIUM')
   const [editingTitle, setEditingTitle] = useState(false)
   const [colTitle, setColTitle] = useState(column.title)
 
@@ -136,7 +136,7 @@ export default function ColumnItem({ column, cards, onAddCard, onDeleteCard, onE
           />
           <select
             value={newCardPriority}
-            onChange={e => setNewCardPriority(e.target.value)}
+            onChange={e => setNewCardPriority(e.target.value as Priority)}
             style={{ ...inputStyle, marginBottom: 6 }}
           >
             <option value="HIGH">高</option>

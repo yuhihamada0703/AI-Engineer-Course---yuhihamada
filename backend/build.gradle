@@ -2,6 +2,8 @@ plugins {
     id 'org.springframework.boot' version '4.0.6'
     id 'io.spring.dependency-management' version '1.1.7'
     id 'java'
+    id 'checkstyle'
+    id 'com.github.spotbugs' version '6.1.11'
 }
 
 group = 'com.taskboard'
@@ -26,6 +28,7 @@ repositories {
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.flywaydb:flyway-core'
     implementation 'org.flywaydb:flyway-database-postgresql'
     implementation 'org.projectlombok:lombok'
@@ -35,6 +38,39 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+checkstyle {
+    toolVersion = '10.21.4'
+    configFile = file('config/checkstyle/checkstyle.xml')
+    maxWarnings = 0
+}
+
+spotbugs {
+    effort = 'max'
+    reportLevel = 'medium'
+    excludeFilter = file('config/spotbugs/exclude.xml')
+    // Java 25 の新しいクラスファイル形式（version 69）は SpotBugs 4.8.x の ASM が未対応のため
+    // ビルドは止めずレポートのみ生成する
+    ignoreFailures = true
+}
+
+spotbugsMain {
+    reports {
+        html {
+            required = true
+            outputLocation = layout.buildDirectory.file('reports/spotbugs/main.html')
+        }
+    }
+}
+
+spotbugsTest {
+    reports {
+        html {
+            required = true
+            outputLocation = layout.buildDirectory.file('reports/spotbugs/test.html')
+        }
+    }
 }
 
 tasks.named('test') {

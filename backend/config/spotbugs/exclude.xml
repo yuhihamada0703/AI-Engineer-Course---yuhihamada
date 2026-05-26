@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter>
+  <!-- Lombok生成コードの誤検知を除外 -->
+  <Match>
+    <Source name="~.*\.java"/>
+    <Bug pattern="EI_EXPOSE_REP,EI_EXPOSE_REP2"/>
+  </Match>
+
+  <!-- SpringのDIによる注入フィールド（final不要）の誤検知を除外 -->
+  <Match>
+    <Bug pattern="URF_UNREAD_FIELD"/>
+  </Match>
+</FindBugsFilter>
