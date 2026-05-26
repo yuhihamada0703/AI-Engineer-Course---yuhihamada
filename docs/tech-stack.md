@@ -1,7 +1,7 @@
 # 技術スタック
 
 **プロジェクト:** タスクボード  
-**最終更新:** 2026-05-24
+**最終更新:** 2026-05-26
 
 ---
 
@@ -15,6 +15,9 @@
 | スタイリング | React インラインスタイル | — | 外部ライブラリ不要。コンポーネントとスタイルを同一ファイルで管理 |
 | D&D ライブラリ | @hello-pangea/dnd | 18.0.1 | react-beautiful-dnd のアクティブメンテナンス継続フォーク。アクセシブルな D&D を実現 |
 | 開発用プロキシサーバー | Express | 4.21.2 | Vite dev と並走する Node.js プロキシ。CORS を回避しつつ API を転送 |
+| Lint | ESLint（v9 flat config） | typescript-eslint 同梱 | 静的解析でコードの問題を早期発見。TypeScript strict ルール + React Hooks ルールを適用 |
+| ESLint プラグイン | typescript-eslint | — | TypeScript 対応の ESLint ルールセット（strict モード） |
+| ESLint プラグイン | eslint-plugin-react-hooks | — | React Hooks の使用規則（依存配列漏れ等）を自動検出 |
 
 ## バックエンド
 
@@ -28,6 +31,9 @@
 | ビルドツール | Gradle | 9.5.1 | Maven より記述量が少なく、ビルドが速い |
 | ボイラープレート削減 | Lombok | Spring Boot 同梱 | getter / setter / constructor を自動生成し、コード量を削減 |
 | API 仕様書 | SpringDoc OpenAPI（Swagger UI） | 2.8.8 | REST API ドキュメントの自動生成と動作確認用 UI |
+| 入力バリデーション | spring-boot-starter-validation | Spring Boot 同梱 | Bean Validation（`@Valid`、`@NotBlank`、`@Size`）で DTO のバリデーションを宣言的に定義 |
+| 静的解析 | Checkstyle | 10.21.4 | Google Java Style ベースのコードスタイル規約を自動チェック |
+| 静的解析 | SpotBugs | 6.1.11 | バイトコード解析によるバグパターン検出（Java 25 対応のためレポートのみ生成） |
 
 ## データベース・インフラ
 
