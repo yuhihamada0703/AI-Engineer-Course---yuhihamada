@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from 'react'
 import { DragDropContext, type DropResult } from '@hello-pangea/dnd'
-import type { BoardData } from './types'
+import type { BoardData, Priority } from './types'
 import * as api from './api'
 import ColumnItem from './ColumnItem'
 import SearchBar from './SearchBar'
@@ -80,10 +80,13 @@ export default function App() {
   function deleteColumn(columnId: string) {
     const col = board.columns[columnId]
     setBoard(prev => {
-      const newCards = { ...prev.cards }
-      col.cardIds.forEach(id => delete newCards[id])
-      const newColumns = { ...prev.columns }
-      delete newColumns[columnId]
+      const cardIdsToRemove = new Set(col.cardIds)
+      const newCards = Object.fromEntries(
+        Object.entries(prev.cards).filter(([id]) => !cardIdsToRemove.has(id))
+      )
+      const newColumns = Object.fromEntries(
+        Object.entries(prev.columns).filter(([id]) => id !== columnId)
+      )
       return { ...prev, columnOrder: prev.columnOrder.filter(id => id !== columnId), columns: newColumns, cards: newCards }
     })
     api.deleteColumn(columnId).catch(console.error)
@@ -97,11 +100,11 @@ export default function App() {
     api.renameColumn(columnId, title).catch(console.error)
   }
 
-  function addCard(columnId: string, title: string, description: string, priority: string) {
+  function addCard(columnId: string, title: string, description: string, priority: Priority) {
     const id = generateId()
     setBoard(prev => ({
       ...prev,
-      cards: { ...prev.cards, [id]: { id, title, description, priority: priority as import('./types').Priority } },
+      cards: { ...prev.cards, [id]: { id, title, description, priority } },
       columns: { ...prev.columns, [columnId]: { ...prev.columns[columnId], cardIds: [...prev.columns[columnId].cardIds, id] } },
     }))
     api.addCard(id, title, description, columnId, priority).catch(console.error)
@@ -109,8 +112,9 @@ export default function App() {
 
   function deleteCard(columnId: string, cardId: string) {
     setBoard(prev => {
-      const newCards = { ...prev.cards }
-      delete newCards[cardId]
+      const newCards = Object.fromEntries(
+        Object.entries(prev.cards).filter(([id]) => id !== cardId)
+      )
       return {
         ...prev,
         cards: newCards,
@@ -138,10 +142,10 @@ export default function App() {
     setSearchKeyword('')
   }
 
-  function editCard(cardId: string, title: string, description: string, priority: string) {
+  function editCard(cardId: string, title: string, description: string, priority: Priority) {
     setBoard(prev => ({
       ...prev,
-      cards: { ...prev.cards, [cardId]: { ...prev.cards[cardId], title, description, priority: priority as import('./types').Priority } },
+      cards: { ...prev.cards, [cardId]: { ...prev.cards[cardId], title, description, priority } },
     }))
     api.editCard(cardId, title, description, priority).catch(console.error)
   }

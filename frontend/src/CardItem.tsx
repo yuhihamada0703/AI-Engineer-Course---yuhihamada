@@ -6,7 +6,7 @@ interface Props {
   card: Card
   index: number
   onDelete: (cardId: string) => void
-  onEdit: (cardId: string, title: string, description: string, priority: string) => void
+  onEdit: (cardId: string, title: string, description: string, priority: Priority) => void
 }
 
 const PRIORITY_LABEL: Record<Priority, string> = { HIGH: '高', MEDIUM: '中', LOW: '低' }
