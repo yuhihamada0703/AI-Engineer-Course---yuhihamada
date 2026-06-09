@@ -75,7 +75,9 @@
       "Bash(git -C '/Users/user/Desktop/AI ENGINEER/taskmanegement' commit -m ' *)",
       "Bash(git -C \"/Users/user/Desktop/AI ENGINEER/taskmanegement\" push origin chore/issue-14-add-lint-and-static-analysis)",
       "Bash(gh issue create --title 'docs: ドキュメントを実装に合わせて更新する' --body ' *)",
-      "Bash(gh issue *)"
+      "Bash(gh issue *)",
+      "Bash(rm docs/deployment-guide.md)",
+      "Bash(grep -r \"deployment-guide\" . --include=\"*.md\" --include=\"*.ts\" --include=\"*.java\" --include=\"*.json\" -l)"
     ]
   },
   "hooks": {
