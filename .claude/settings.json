@@ -62,7 +62,20 @@
       "Bash(echo \"Backend exit: $?\")",
       "Bash(gh pr *)",
       "Bash(git fetch *)",
-      "Bash(git merge *)"
+      "Bash(git merge *)",
+      "Read(//Users/user/.claude/plans/**)",
+      "Bash(cat > *)",
+      "Bash(npx tsc *)",
+      "Bash(./gradlew checkstyleMain)",
+      "Bash(./gradlew checkstyleMain --stacktrace)",
+      "Bash(./gradlew spotbugsMain --info)",
+      "Bash(./gradlew checkstyleMain spotbugsMain build)",
+      "Bash(git -C \"/Users/user/Desktop/AI ENGINEER/taskmanegement\" log --oneline -3)",
+      "Bash(git -C '/Users/user/Desktop/AI ENGINEER/taskmanegement' add frontend/eslint.config.js frontend/package.json frontend/package-lock.json frontend/src/App.tsx frontend/src/CardItem.tsx frontend/src/ColumnItem.tsx frontend/src/api.ts frontend/src/main.tsx backend/build.gradle backend/config/ backend/src/main/java/com/taskboard/controller/BoardController.java backend/src/main/java/com/taskboard/controller/CardController.java backend/src/main/java/com/taskboard/controller/ColumnController.java backend/src/main/java/com/taskboard/dto/CreateCardRequest.java backend/src/main/java/com/taskboard/dto/CreateColumnRequest.java backend/src/main/java/com/taskboard/dto/EditCardRequest.java backend/src/main/java/com/taskboard/dto/RenameColumnRequest.java backend/src/main/java/com/taskboard/entity/CardEntity.java backend/src/main/java/com/taskboard/entity/ColumnEntity.java backend/src/main/java/com/taskboard/repository/CardRepository.java backend/src/main/java/com/taskboard/service/BoardService.java backend/src/main/resources/application.properties backend/src/main/resources/application-dev.properties)",
+      "Bash(git -C '/Users/user/Desktop/AI ENGINEER/taskmanegement' commit -m ' *)",
+      "Bash(git -C \"/Users/user/Desktop/AI ENGINEER/taskmanegement\" push origin chore/issue-14-add-lint-and-static-analysis)",
+      "Bash(gh issue create --title 'docs: ドキュメントを実装に合わせて更新する' --body ' *)",
+      "Bash(gh issue *)"
     ]
   },
   "hooks": {

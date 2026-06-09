@@ -64,3 +64,31 @@
 - CORS: Spring Boot 側で `http://localhost:5173` を許可
 - 認証: なし（シングルユーザー想定）
 - DB マイグレーション: Flyway が起動時に `src/main/resources/db/migration/` を自動適用
+
+---
+
+## AWS デプロイ構成（無料枠）
+
+| 区分 | 技術 | バージョン | 採用理由 |
+|------|------|-----------|---------|
+| IaC ツール | Terraform | 1.5 以上 | HCL でインフラをコード管理。マルチクラウド対応・宣言的構文 |
+| CDN | AWS CloudFront | - | HTTPS 化・キャッシュによる高速配信（無料枠: 1TB/月） |
+| 静的ホスティング | AWS S3 | - | React ビルド済みファイルの配信（無料枠: 5GB/月） |
+| アプリサーバー | AWS EC2 t2.micro | - | Spring Boot の実行基盤（無料枠: 750h/月・12 ヶ月） |
+| データベース | AWS RDS db.t3.micro | PostgreSQL 16 | マネージド PostgreSQL（無料枠: 750h/月・12 ヶ月） |
+| ネットワーク | AWS VPC | - | プライベートネットワーク（無料） |
+
+### 本番環境アーキテクチャ概要
+
+```
+[ブラウザ]
+     │
+[CloudFront] ─── /api/* ──→ [EC2 t2.micro]
+     │                       Spring Boot (Port: 8080)
+     │                             │
+  [S3 バケット]              [RDS db.t3.micro]
+  React 静的ファイル          PostgreSQL (Port: 5432)
+                             （プライベートサブネット）
+```
+
+- 詳細は [deployment-guide.md](deployment-guide.md) を参照
