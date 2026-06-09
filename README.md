@@ -48,18 +48,19 @@
 
 ### インフラ（AWS 本番環境）
 
-| 技術 | バージョン |
-|------|-----------|
-| Terraform | 1.5 以上 |
-| AWS CloudFront | - |
-| AWS S3 | - |
-| AWS EC2 t2.micro | - |
-| AWS RDS db.t3.micro (PostgreSQL) | - |
-| AWS VPC | - |
+| 技術 | 用途 |
+|------|------|
+| Terraform | インフラをコードで管理（IaC） |
+| EC2 (t3.micro) | アプリサーバー（Nginx + Spring Boot） |
+| RDS PostgreSQL 16 (db.t3.micro) | マネージド PostgreSQL |
+| Nginx | リバースプロキシ・フロントエンド配信 |
+| Amazon Linux 2023 | EC2 OS |
 
 ---
 
 ## アーキテクチャ
+
+### ローカル開発環境
 
 ```
 [ブラウザ]
@@ -77,9 +78,26 @@
 [PostgreSQL] (Port: 5432, Docker)
 ```
 
-- CORS: Spring Boot 側で `http://localhost:5173` を許可
+### AWS 本番環境
+
+```
+インターネット
+     │ HTTP :80
+     ▼
+[EC2 / Nginx]
+  /        → React 静的ファイル
+  /api/*   → localhost:8080（プロキシ）
+     │ :8080（VPC 内部）
+     ▼
+[Spring Boot（systemd）]
+     │ PostgreSQL :5432（VPC 内部）
+     ▼
+[RDS（プライベートサブネット）]
+```
+
+- CORS: Nginx 経由で同一オリジンのため不要
 - 認証: なし（シングルユーザー想定）
-- DB マイグレーション: Flyway が起動時に `V1__init.sql` を自動適用
+- DB マイグレーション: Flyway が起動時に自動適用
 
 ---
 
@@ -205,13 +223,18 @@ taskmanegement/
 │       ├── dto/
 │       └── config/
 ├── docs/                   # 設計ドキュメント
-│   ├── requirements.md             # 要件定義
+│   ├── requirements.md         # 要件定義
 │   ├── functional-requirements.md  # 機能要件
-│   ├── screen-requirements.md      # 画面要件
-│   ├── data-design.md              # データ設計・API 設計
-│   ├── tech-stack.md               # 技術スタック（バージョン一覧）
-│   └── deployment-guide.md         # AWS + Terraform デプロイガイド
-├── terraform/              # Terraform IaC（作成予定）
+│   ├── screen-requirements.md  # 画面要件
+│   ├── data-design.md          # データ設計・API 設計
+│   ├── tech-stack.md           # 技術スタック（バージョン一覧）
+│   └── infrastructure.md       # AWS インフラ構成
+├── terraform/              # Terraform IaC（AWS インフラ定義）
+│   ├── main.tf / variables.tf / outputs.tf
+│   ├── vpc.tf              # VPC・サブネット
+│   ├── security_groups.tf  # セキュリティグループ
+│   ├── ec2.tf              # EC2 インスタンス
+│   └── rds.tf              # RDS インスタンス
 ├── docker-compose.yml      # PostgreSQL コンテナ（ローカル開発用）
 └── CLAUDE.md               # Claude Code 作業ルール
 ```
@@ -227,7 +250,7 @@ taskmanegement/
 | [画面要件](docs/screen-requirements.md) | UI/UX 要件・レイアウト仕様・コンポーネント仕様 |
 | [データ設計](docs/data-design.md) | DB テーブル設計・ER 図・REST API 設計・レスポンス例 |
 | [技術スタック](docs/tech-stack.md) | 採用技術・ライブラリ・バージョン一覧・採用理由 |
-| [デプロイガイド](docs/deployment-guide.md) | AWS + Terraform デプロイ手順（初心者向け解説付き） |
+| [インフラ構成](docs/infrastructure.md) | AWS 構成図・EC2/RDS 設定概要・デプロイフロー |
 
 ---
 

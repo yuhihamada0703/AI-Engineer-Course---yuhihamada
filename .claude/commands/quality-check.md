@@ -1,59 +1,60 @@
-PR作成前の品質チェックを以下の順番で実行し、問題があれば具体的な修正箇所を報告してください。
+# PR 前品質チェック
 
-## ステップ1: フロントエンド 型チェック
+PR を作成する前に、フロントエンド・バックエンド・Terraform の品質チェックを実施する。
+すべてのチェックが通過してから PR を作成すること。
 
-```bash
-cd frontend && npm run build
-```
-
-TypeScriptのコンパイルエラーがないことを確認する。エラーがあればファイル名・行番号・エラー内容を報告する。
-
-## ステップ2: フロントエンド ESLint
+## 1. フロントエンド
 
 ```bash
-cd frontend && npx eslint src --ext .ts,.tsx
+cd frontend
+
+# TypeScript 型チェック
+npx tsc --noEmit
+
+# ESLint（コードスタイル・静的解析）
+npx eslint src/
 ```
 
-Lintエラー・警告がないことを確認する。問題があればファイル名・行番号・ルール名を列挙する。
+**合格基準**: エラー 0 件（warning は許容）
 
-## ステップ3: バックエンド 静的解析
+## 2. バックエンド
 
 ```bash
-cd backend && ./gradlew checkstyleMain spotbugsMain
+cd backend
+
+# Checkstyle（コードスタイル）+ SpotBugs（バグ検出）
+./gradlew checkstyleMain spotbugsMain
 ```
 
-Checkstyle（コードスタイル）とSpotBugs（バグパターン）の違反がないことを確認する。  
-違反があればファイル名・行番号・違反内容を報告する。
+**合格基準**: BUILD SUCCESSFUL
 
-## ステップ4: 差分コードレビュー
+## 3. Terraform
 
 ```bash
-git diff main...HEAD
+cd terraform
+
+# フォーマットチェック（整形が必要な場合は terraform fmt で修正）
+terraform fmt -check -recursive
+
+# 構成の構文検証
+terraform validate
 ```
 
-上記の差分を以下の観点でレビューする:
+**合格基準**:
+- `fmt -check` → exit 0（差分なし）
+- `validate` → `Success! The configuration is valid.`
 
-- **正確性**: ロジックのバグ、境界値、エラーハンドリングの漏れ
-- **セキュリティ**: インジェクション、認証漏れ、センシティブ情報の露出
-- **設計**: レイヤー責務の分離（Controller/Service/Repository）、型安全性
-- **保守性**: 重複コード、命名の明確さ、不要なコメントの有無
+## チェック結果の報告
 
-## レポート形式
+各チェックの結果を以下の形式でまとめること：
 
-チェック完了後、以下の形式でサマリーを出力する:
+| 対象 | チェック | 結果 |
+|------|---------|------|
+| フロントエンド | TypeScript | ✅ / ❌ |
+| フロントエンド | ESLint | ✅ / ❌ |
+| バックエンド | Checkstyle | ✅ / ❌ |
+| バックエンド | SpotBugs | ✅ / ❌ |
+| Terraform | fmt -check | ✅ / ❌ |
+| Terraform | validate | ✅ / ❌ |
 
-```
-## 品質チェック結果
-
-| チェック項目           | 結果 |
-|----------------------|------|
-| TypeScript 型チェック  | ✅ / ❌ |
-| ESLint               | ✅ / ❌ |
-| Checkstyle/SpotBugs  | ✅ / ❌ |
-| コードレビュー         | ✅ / ⚠️ |
-
-### 要対応事項
-（問題がある場合のみ列挙）
-```
-
-すべて ✅ であれば「PRを作成できます」と伝える。問題がある場合は修正が完了するまでPR作成を保留する。
+❌ がある場合はエラー内容を修正してから PR を作成する。
