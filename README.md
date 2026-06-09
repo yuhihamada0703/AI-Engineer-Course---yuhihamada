@@ -39,12 +39,23 @@
 | Flyway | Spring Boot 同梱 |
 | Lombok | Spring Boot 同梱 |
 
-### インフラ
+### インフラ（ローカル開発）
 
 | 技術 | バージョン |
 |------|-----------|
 | PostgreSQL | 17-alpine |
 | Docker Compose | 最新 |
+
+### インフラ（AWS 本番環境）
+
+| 技術 | バージョン |
+|------|-----------|
+| Terraform | 1.5 以上 |
+| AWS CloudFront | - |
+| AWS S3 | - |
+| AWS EC2 t2.micro | - |
+| AWS RDS db.t3.micro (PostgreSQL) | - |
+| AWS VPC | - |
 
 ---
 
@@ -194,12 +205,14 @@ taskmanegement/
 │       ├── dto/
 │       └── config/
 ├── docs/                   # 設計ドキュメント
-│   ├── requirements.md         # 要件定義
+│   ├── requirements.md             # 要件定義
 │   ├── functional-requirements.md  # 機能要件
-│   ├── screen-requirements.md  # 画面要件
-│   ├── data-design.md          # データ設計・API 設計
-│   └── tech-stack.md           # 技術スタック（バージョン一覧）
-├── docker-compose.yml      # PostgreSQL コンテナ
+│   ├── screen-requirements.md      # 画面要件
+│   ├── data-design.md              # データ設計・API 設計
+│   ├── tech-stack.md               # 技術スタック（バージョン一覧）
+│   └── deployment-guide.md         # AWS + Terraform デプロイガイド
+├── terraform/              # Terraform IaC（作成予定）
+├── docker-compose.yml      # PostgreSQL コンテナ（ローカル開発用）
 └── CLAUDE.md               # Claude Code 作業ルール
 ```
 
@@ -214,6 +227,7 @@ taskmanegement/
 | [画面要件](docs/screen-requirements.md) | UI/UX 要件・レイアウト仕様・コンポーネント仕様 |
 | [データ設計](docs/data-design.md) | DB テーブル設計・ER 図・REST API 設計・レスポンス例 |
 | [技術スタック](docs/tech-stack.md) | 採用技術・ライブラリ・バージョン一覧・採用理由 |
+| [デプロイガイド](docs/deployment-guide.md) | AWS + Terraform デプロイ手順（初心者向け解説付き） |
 
 ---
 

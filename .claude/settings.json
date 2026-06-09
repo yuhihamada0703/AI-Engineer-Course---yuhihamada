@@ -11,7 +11,26 @@
       "Bash(curl -s -X POST http://localhost:8080/api/cards -H 'Content-Type: application/json' -d '{\"id\":\"card-auto-1\",\"title\":\"朝のミーティング準備\",\"description\":\"アジェンダを作成して参加者に共有する\",\"columnId\":\"col-1\"}')",
       "Bash(curl -s -X POST http://localhost:8080/api/cards -H 'Content-Type: application/json' -d '{\"id\":\"card-auto-2\",\"title\":\"ドキュメント更新\",\"description\":\"API仕様書を最新版に反映する\",\"columnId\":\"col-1\"}')",
       "Bash(curl -s -X POST http://localhost:8080/api/cards -H 'Content-Type: application/json' -d '{\"id\":\"card-auto-3\",\"title\":\"バグ調査\",\"description\":\"ログイン画面でエラーが発生する件を調査中\",\"columnId\":\"col-2\"}')",
-      "Bash(curl -s -X POST http://localhost:8080/api/cards -H 'Content-Type: application/json' -d '{\"id\":\"card-auto-4\",\"title\":\"デプロイ作業\",\"description\":\"ステージング環境へのリリース完了\",\"columnId\":\"col-3\"}')"
+      "Bash(curl -s -X POST http://localhost:8080/api/cards -H 'Content-Type: application/json' -d '{\"id\":\"card-auto-4\",\"title\":\"デプロイ作業\",\"description\":\"ステージング環境へのリリース完了\",\"columnId\":\"col-3\"}')",
+      "Read(//Users/user/.claude/plans/**)",
+      "Bash(cat > *)",
+      "Bash(npx tsc *)",
+      "Bash(./gradlew checkstyleMain)",
+      "Bash(./gradlew checkstyleMain --stacktrace)",
+      "Bash(./gradlew checkstyleMain spotbugsMain)",
+      "Bash(python3 -c ' *)",
+      "Bash(./gradlew spotbugsMain --info)",
+      "Bash(./gradlew checkstyleMain spotbugsMain build)",
+      "Bash(git -C \"/Users/user/Desktop/AI ENGINEER/taskmanegement\" log --oneline -3)",
+      "Bash(git -C '/Users/user/Desktop/AI ENGINEER/taskmanegement' add frontend/eslint.config.js frontend/package.json frontend/package-lock.json frontend/src/App.tsx frontend/src/CardItem.tsx frontend/src/ColumnItem.tsx frontend/src/api.ts frontend/src/main.tsx backend/build.gradle backend/config/ backend/src/main/java/com/taskboard/controller/BoardController.java backend/src/main/java/com/taskboard/controller/CardController.java backend/src/main/java/com/taskboard/controller/ColumnController.java backend/src/main/java/com/taskboard/dto/CreateCardRequest.java backend/src/main/java/com/taskboard/dto/CreateColumnRequest.java backend/src/main/java/com/taskboard/dto/EditCardRequest.java backend/src/main/java/com/taskboard/dto/RenameColumnRequest.java backend/src/main/java/com/taskboard/entity/CardEntity.java backend/src/main/java/com/taskboard/entity/ColumnEntity.java backend/src/main/java/com/taskboard/repository/CardRepository.java backend/src/main/java/com/taskboard/service/BoardService.java backend/src/main/resources/application.properties backend/src/main/resources/application-dev.properties)",
+      "Bash(git -C '/Users/user/Desktop/AI ENGINEER/taskmanegement' commit -m ' *)",
+      "Bash(git -C \"/Users/user/Desktop/AI ENGINEER/taskmanegement\" push origin chore/issue-14-add-lint-and-static-analysis)",
+      "Bash(gh issue create --title 'docs: ドキュメントを実装に合わせて更新する' --body ' *)",
+      "Bash(gh pr *)",
+      "Bash(gh issue *)"
+    ],
+    "additionalDirectories": [
+      "/Users/user/.claude/plans"
     ]
   },
   "hooks": {
