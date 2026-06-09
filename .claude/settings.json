@@ -59,7 +59,10 @@
       "Bash(echo \"validate exit: $?\")",
       "Bash(echo \"ESLint exit: $?\")",
       "Bash(./gradlew checkstyleMain spotbugsMain)",
-      "Bash(echo \"Backend exit: $?\")"
+      "Bash(echo \"Backend exit: $?\")",
+      "Bash(gh pr *)",
+      "Bash(git fetch *)",
+      "Bash(git merge *)"
     ]
   },
   "hooks": {
