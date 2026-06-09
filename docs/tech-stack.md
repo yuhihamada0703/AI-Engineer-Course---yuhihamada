@@ -91,4 +91,4 @@
                              （プライベートサブネット）
 ```
 
-- 詳細は [deployment-guide.md](deployment-guide.md) を参照
+- 詳細は [infrastructure.md](infrastructure.md) を参照
