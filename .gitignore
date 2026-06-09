@@ -11,3 +11,10 @@ frontend/server/dev.db-wal
 backend/data/
 backend/build/
 backend/.gradle/
+
+# Terraform
+terraform/.terraform/
+terraform/.terraform.lock.hcl
+terraform/terraform.tfstate
+terraform/terraform.tfstate.backup
+terraform/terraform.tfvars
